@@ -77,7 +77,7 @@ module.exports = function() {
             process.on('uncaughtException', (err) => {
                 const date = new Date().toLocaleString().replace(/\s|\//g, '-').replace(/:/g, '');
                 console.log(`        ScrrenShot: error${date}.png`);
-                client.saveScreenshot(joinOutputPath(`error${date}`));
+                client.saveScreenshot(makePathFlat(`error${date}`, 'error'));
             });
         });
         after(function(done) {
@@ -310,6 +310,57 @@ module.exports = function() {
                     .setValue('input[name=j_password]', config.qusers.admin.password)
                     .click('input[class=login-submit]').pause(2000).then()
                     .call(done);
+            });
+        });
+
+        describe('M101-1', () => {
+            it('is OK', function(done) {
+                this.timeout(20000);
+                client
+                    .url(config.context + '/PE/Workitem/list').pause(5000)
+                    .execute(Annotation.rectangle, ".side-menu a[href='/PE/Workitem/list']", {
+                        text: "マイタスク",
+                        position: cAnoPosition.BOTTOM_RIGHT
+                    }).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "≒ 引き受けた仕事").then()
+                    .saveScreenshot(makePathFlat('M101-1', 'manual'))
+                    .execute(Annotation.clear).then()
+                    .call(done);
+            });
+        });
+
+        describe('M102-1', () => {
+            it('is OK', function(done) {
+                this.timeout(20000);
+                client
+                    .url(config.context + '/PE/ProcessModel/listView').pause(2000)
+                    .execute(Annotation.rectangle, "#processModels", {
+                        text: "開始フローの選択",
+                        position: cAnoPosition.BOTTOM
+                    },cAnoColors[1]).then()
+                    .execute(Annotation.rectangle, ".side-menu a[href='/PE/ProcessModel/listView']", {
+                        text: "新規開始メニュー",
+                        position: cAnoPosition.BOTTOM_RIGHT
+                    }).then()
+                    .saveScreenshot(makePathFlat('M102-1', 'manual'))
+                    .execute(Annotation.clear).then()
+
+                    .click("a[href='/OR/ProcessModel/view?processModelInfoId=4']").pause(2000).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "業務マニュアル").then()
+                    .saveScreenshot(makePathFlat('M102-2', 'manual'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PE/ProcessModel/listView').pause(2000)
+                    .click("a[href='/PE/ProcessInstance/startAndExecute?processModelInfoId=4&nodeNumber=1']").pause(2000).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "入力画面").then()
+                    .saveScreenshot(makePathFlat('M102-3', 'manual'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PE/Workitem/list').pause(2000)
+                    .alertAccept()
+
+                    .call(done);
+
             });
         });
 
