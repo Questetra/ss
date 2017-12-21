@@ -407,11 +407,15 @@ module.exports = function() {
                         text: "[アプリ]を業務システムとして稼働",
                         position: cAnoPosition.BOTTOM_RIGHT
                     }, cAnoColors[0], null, null, [5, 15, -20, 30]).then()
-                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "管理画面").then(function(ret) {
-                        console.log("\t\t" + ret.value.join("\n\t\t")); // outputs: 10
-                    }).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "管理画面").then()
                     .saveScreenshot(makePathFlat('M201-2', 'manual'))
                     .execute(Annotation.clear).then()
+
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "モデリング画面").then()
+                    .saveScreenshot(makePathFlat('M201-3', 'manual'))
+                    .execute(Annotation.clear).then()
+
                     .call(done);
             });
         });
