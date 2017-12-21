@@ -1,5 +1,5 @@
-const M2Capture = require('./capture/M2');
+const M2Capture = require('./capture/Manual');
 
-describe('Caputure M2', () => {
+describe('Manual capture', () => {
   M2Capture();
 });
