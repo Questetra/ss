@@ -1,36 +1,23 @@
 const webdriverio = require('webdriverio');
+
 const fs = require('fs');
 
 const Annotation = require('./captureAnnotation.js').Annotation;
 const cAnoColors = require('./captureAnnotation.js').COLORS;
 const cAnoPosition = require('./captureAnnotation.js').POSITION;
 
-console.log(Annotation);
+const cGunAdd = require('./captureGun.js').addTrigger;
+const cGunWait = require('./captureGun.js').waitUntil;
+const cGunRemove = require('./captureGun.js').removeTrigger;
 
 const nowDate = new Date();
 
-/*
-var config = {
-    url: 'https://template.questetra.net/Login_show',
-    deprecationWarnings: false,
-    context: "https://horikawa-sanjo-216.questetra.net/",
-    qusers: {
-        admin: {
-            mail: "yamamoto+capture01@questetra.com",
-            password: "173w5354q"
-        },
-        tasker: {
-            mail: "yamamoto+capture02@questetra.com",
-            password: "173w5354q"
-        }
-    }
-};
-*/
+var chai = require('chai');
+var chaiAsPromised = require('./chai-as-promised.js');
+
 const config = require('./config.js');
 
-
 let client;
-
 
 function makePathFlat(str, subDir) {
     if (!fs.existsSync(subDir)) {
@@ -53,13 +40,13 @@ function show(target) {
     $(target).show();
 }
 
-function checkFlash() {
-    //var $ = jQuery;
-    return true;
+/*
+function removeCaptureTrigger() {
+    var $ = jQuery;
+    $(".capture-trigger-item").remove();
+    return;
 }
-
-// http://webdriver.io/api.html
-
+*/
 module.exports = function() {
     describe('Manual Capture Start', () => {
 
@@ -74,6 +61,11 @@ module.exports = function() {
                     width: 1200,
                     height: 630
                 });
+
+            chai.Should();
+            chai.use(chaiAsPromised);
+            chaiAsPromised.transferPromiseness = client.transferPromiseness;
+
             process.on('uncaughtException', (err) => {
                 const date = new Date().toLocaleString().replace(/\s|\//g, '-').replace(/:/g, '');
                 console.log(`        ScrrenShot: error${date}.png`);
@@ -104,7 +96,7 @@ module.exports = function() {
             it('is OK', function(done) {
                 this.timeout(30000);
                 client
-                    .url(config.context + "/Login_show")
+                    .url(config.context + "/Login_show").then().pause(2000)
                     .setValue('input[name=j_username]', config.qusers.admin.mail)
                     .setValue('input[name=j_password]', config.qusers.admin.password)
                     .click('input[class=login-submit]')
@@ -118,12 +110,13 @@ module.exports = function() {
 
         describe('タスクの生成', () => {
             it('is OK', function(done) {
-                this.timeout(60000);
+                this.timeout(120000);
                 client
-                    .url(config.context + "/Login_show")
-                    .setValue('input[name=j_username]', config.qusers.tasker.mail)
-                    .setValue('input[name=j_password]', config.qusers.tasker.password)
+                    .url(config.context + "/Login_show").then().pause(2000)
+                    .setValue('input[name=j_username]', config.qusers.tasker.mail).pause(500)
+                    .setValue('input[name=j_password]', config.qusers.tasker.password).pause(1000)
                     .click('input[class=login-submit]').pause(2000)
+
                     // 期限の切れたタスクを依頼する
                     .url(config.context + '/PE/ProcessModel/listView').then().pause(2000)
                     .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=4']").pause(2000)
@@ -152,6 +145,10 @@ module.exports = function() {
                     }).then()
                     .click("input[id='submitButton']").pause(2000)
                     .alertAccept()
+                    .then(function(){
+                        console.log("\t　作業依頼フロー　期限の切れたタスク");
+                    })
+
                     // 期限内のタスクを生成
                     .url(config.context + '/PE/ProcessModel/listView').then().pause(2000)
                     .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=4']").pause(2000)
@@ -161,7 +158,7 @@ module.exports = function() {
                     .execute(Annotation.rectangle, "input[name='data[3].dummy']", {
                         text: "ユーザ型データ",
                         position: cAnoPosition.RIGHT
-                    }, cAnoColors[0], null, null, [5,5,20,70]).then()
+                    }, cAnoColors[0], null, null, [5, 5, 20, 70]).then()
                     .saveScreenshot(makePathFlat('M210-2', 'manual')).then()
                     .execute(Annotation.clear).then()
 
@@ -187,57 +184,46 @@ module.exports = function() {
                     }).then()
                     .click("input[id='submitButton']").pause(2000)
                     .alertAccept()
-                    .url(config.context + '/j_spring_security_logout').pause(2000)
+                    .then(function(){
+                        console.log("\t　作業依頼フロー　期限内のタスク");
+                    })
+
+                    // 投資判断フロー
+                    .url(config.context + '/PE/ProcessModel/listView').then().pause(2000)
+                    .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=18']").pause(2000)
+                    .execute(function() {
+                        var $ = jQuery;
+
+                        $("input[name='title']").val("株式会社 クエステトラ")
+                        $("input[name='data[3].input']").val("CRM分野におけるクラウドサービスを展開している\n本分野は今後3-5年で急成長が見込まれており、その中においてサービスのコンセプト、技術力、チームという点で、非常に有望な企業である。")
+                        return;
+                    }).then()
+                    .execute(cGunAdd, 'M212-2 : ファイルを添付する')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .click("input[id='submitButton']").pause(2000)
+                    .alertAccept()
+                    .then(function(){
+                        console.log("\t　投資判断フロー");
+                    })
+
+
+                    .url(config.context + '/j_spring_security_logout').pause(3000)
                     .call(done);
             });
         });
-        /*
-                describe('Login > Google連携/SAML連携　無効化 > Logout > M101-2', () => {
-                    it('is OK', function(done) {
-                        this.timeout(20000);
-                        client
-                            // Login
-                            .url(config.context + "/Login_show")
-                            .setValue('input[name=j_username]', config.qusers.admin.mail)
-                            .setValue('input[name=j_password]', config.qusers.admin.password)
-                            .click('input[class=login-submit]')
-                            // Google 連携無効化
-                            .url(config.context + '/Admin/GoogleAppsDomain/view')
-                            .setValue('input[name=domain]', '')
-                            .click("input[id='GoogleAppsDomain_update_0']").then().pause(2000)
-                            // SAML 連携無効化
-                            .url(config.context + '/Admin/Saml/view').then()
-                            .execute(function() {
-                                var $ = jQuery;
-                                $("input[id='Saml_edit_enable']").prop('checked', false);
-                                return;
-                            }).then().pause(2000)
-                            .click('input[id=Saml_edit_0]').pause(2000)
-                            // Logout
-                            .url(config.context + '/j_spring_security_logout').pause(2000)
-                            // capture M101-2
-                            .url(config.context + "/Login_show")
-                            .setValue('input[name=j_username]', 'example@example.com')
-                            .setValue('input[name=j_password]', 'example')
-                            .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "メールアドレスLogin<br />(ノーマルLogin)", {}).then(function(ret) {
-                                console.log("\t\t" + ret.value.join("\n\t\t")); // outputs: 10
-                            }).then()
-                            .saveScreenshot(makePathFlat('M101-2', 'manual'))
-                            .execute(Annotation.clear).then()
-                            .call(done);
-                    });
-                });
-        */
+
         describe('Login > Google連携/SAML連携　有効化 > Logout > M101-3 > Login > Google連携/SAML連携　無効化 > Logout > M101-2', () => {
             it('is OK', function(done) {
-                this.timeout(30000);
+                this.timeout(120000);
                 client
                     //  Google連携/SAML連携　有効化
                     //Login
-                    .url(config.context + "/Login_show")
-                    .setValue('input[name=j_username]', config.qusers.admin.mail)
-                    .setValue('input[name=j_password]', config.qusers.admin.password)
-                    .click('input[class=login-submit]')
+                    .url(config.context + "/Login_show").then().pause(5000)
+                    .setValue('input[name=j_username]', config.qusers.admin.mail).pause(500)
+                    .setValue('input[name=j_password]', config.qusers.admin.password).pause(500)
+                    .click('input[class=login-submit]').pause(3000)
                     // Google 連携有効化
                     .url(config.context + '/Admin/GoogleAppsDomain/view')
                     .setValue('input[name=domain]', 'questetra.com')
@@ -271,10 +257,10 @@ module.exports = function() {
                     .execute(Annotation.clear).then()
                     // Google連携/SAML連携　無効化
                     // Login
-                    .url(config.context + "/Login_show")
-                    .setValue('input[name=j_username]', config.qusers.admin.mail)
-                    .setValue('input[name=j_password]', config.qusers.admin.password)
-                    .click('input[class=login-submit]')
+                    .url(config.context + "/Login_show").then().pause(5000)
+                    .setValue('input[name=j_username]', config.qusers.admin.mail).pause(2000)
+                    .setValue('input[name=j_password]', config.qusers.admin.password).pause(2000)
+                    .click('input[class=login-submit]').pause(3000)
                     // Google 連携無効化
                     .url(config.context + '/Admin/GoogleAppsDomain/view')
                     .setValue('input[name=domain]', '')
@@ -306,12 +292,14 @@ module.exports = function() {
             it('is OK', function(done) {
                 this.timeout(10000);
                 client
-                    .setValue('input[name=j_username]', config.qusers.admin.mail)
-                    .setValue('input[name=j_password]', config.qusers.admin.password)
+                    .url(config.context + "/Login_show").then().pause(3000)
+                    .setValue('input[name=j_username]', config.qusers.admin.mail).pause(500)
+                    .setValue('input[name=j_password]', config.qusers.admin.password).pause(500)
                     .click('input[class=login-submit]').pause(2000).then()
                     .call(done);
             });
         });
+
 
         describe('M101-1', () => {
             it('is OK', function(done) {
@@ -337,7 +325,7 @@ module.exports = function() {
                     .execute(Annotation.rectangle, "#processModels", {
                         text: "開始フローの選択",
                         position: cAnoPosition.BOTTOM
-                    },cAnoColors[1]).then()
+                    }, cAnoColors[1]).then()
                     .execute(Annotation.rectangle, ".side-menu a[href='/PE/ProcessModel/listView']", {
                         text: "新規開始メニュー",
                         position: cAnoPosition.BOTTOM_RIGHT
@@ -420,10 +408,22 @@ module.exports = function() {
             });
         });
 
-        describe('M202-2', () => {
+        describe('M202-1, M202-2 M202-3', () => {
             it('is OK', function(done) {
-                this.timeout(100000);
+                this.timeout(600000);
                 client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=4')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M202-1 : プロパティを開き、締め切り/通知タブを選択')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "各工程のプロパティで設定").then()
+                    .saveScreenshot(makePathFlat('M202-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
                     .url(config.context + '/PE/Workitem/list').then()
                     .execute(Annotation.rectangle, "span[class='errorMessage']", {
                         text: "[マイタスク]の締め切り表示",
@@ -434,6 +434,355 @@ module.exports = function() {
                     }).then()
                     .saveScreenshot(makePathFlat('M202-2', 'manual'))
                     .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=3')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M202-3 : タイマー境界のプロパティを開き、締め切り/通知タブを選択')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "作業打ち切りにも").then()
+                    .saveScreenshot(makePathFlat('M202-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M203-1, M203-2 M203-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=5')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M203-1 : advanced の　ゲートウェイを開く', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "全経路、1経路、ｎ経路").then()
+                    .saveScreenshot(makePathFlat('M203-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=6')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M203-2 : advanced の　ゲートウェイを開く', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "単一選択の2書式").then()
+                    .saveScreenshot(makePathFlat('M203-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=7')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M203-3 : ゲートウェイのプロパティを開く', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "ORゲートウェイ").then()
+                    .saveScreenshot(makePathFlat('M203-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M204-1, M204-2 M204-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=8')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "トークン増殖ループの禁止").then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "個別ループ or 合流後ループに").then()
+                    .saveScreenshot(makePathFlat('M204-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=9')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "個別ループのパターン").then()
+                    .saveScreenshot(makePathFlat('M204-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=10')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "合流後ループのパターン").then()
+                    .saveScreenshot(makePathFlat('M204-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M205-1, M205-2 M205-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=11')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M205-1 : データ項目タブを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "業務データの定義").then()
+                    .saveScreenshot(makePathFlat('M205-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M205-2 : 「ワークフロー図」タブを開き、タスクのプロパティを開き、「データ編集許可」タブを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "工程プロパティで閲覧レベル設定").then()
+                    .saveScreenshot(makePathFlat('M205-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M205-3 : 「データ項目」タブ>「データ編集許可」を開く > 複数のデータ項目を選択する')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "一括して閲覧レベル設定").then()
+                    .saveScreenshot(makePathFlat('M205-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M206-1, M206-2 M206-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=13')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M206-1 : データ項目タブを開いて、必須項目のデータを選択する')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "処理画面での入力が必須に").then()
+                    .saveScreenshot(makePathFlat('M206-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M206-2 : 数値型データ項目を選択する')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "最大値や少数桁数の制限").then()
+                    .saveScreenshot(makePathFlat('M206-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M206-3 : テーブル型データ項目を選択する')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "[テーブル型]の書式設定").then()
+                    .saveScreenshot(makePathFlat('M206-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M207-1, M207-2 M207-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=14')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M207-1 : データ項目タブを開いて、初期値が設定された（見積書番号）データ項目を選択する')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "プロセス起動時、値が自動セット").then()
+                    .saveScreenshot(makePathFlat('M207-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M207-2 : 固定的初期値が設定された（見積提出先会社名）データ項目を選択、初期値編集ダイアログを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "固定的な値の設定").then()
+                    .saveScreenshot(makePathFlat('M207-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M207-3 : 動的初期値が設定された（見積書番号）データ項目を選択、初期値編集ダイアログを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "動的な値の設定").then()
+                    .saveScreenshot(makePathFlat('M207-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M208-1, M208-2 M208-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=15')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "上流で候補列挙").then()
+                    .saveScreenshot(makePathFlat('M208-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M208-2 : データ項目タブ > 選択肢「ステータス」を選択 > 選択肢「編集」でダイアログを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "固定的な選択肢設定").then()
+                    .saveScreenshot(makePathFlat('M208-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M208-3 : 続いて、選択肢「予算区分」を選択 > 選択肢「編集」でダイアログを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "動的な選択肢の設定").then()
+                    .saveScreenshot(makePathFlat('M208-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M209-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=16')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+
+                    .execute(cGunAdd, 'M209-1 : プロセスモデルがよく見えるよう調節')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "スイムレーン単位で担当者設定").then()
+                    .saveScreenshot(makePathFlat('M209-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M210-1 M210-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=4')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M210-1 : 処理担当者タブ > 依頼元スイムレーン「追加」 > データ項目で指定で「依頼先」にマウスオーバー', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M210-1', 'manual'))
+
+                    .url(config.context + '/PE/Workitem/list').pause(3000).then()
+                    .execute(function() {
+                        var $ = jQuery;
+                        $("input[name='query']").val('青年の主張')
+                        return;
+                    }).then()
+                    .submitForm('#pi-search-form').pause(5000).then()
+                    .click("a[href^='/OR/ProcessInstance/view?processInstanceId=']").pause(5000).then()
+                    .scroll("h3[id='title-workitem']", 0, -200)
+                    .saveScreenshot(makePathFlat('M210-3', 'manual'))
+
+                    .call(done);
+            });
+        });
+
+        describe('M211-1 M211-2 M211-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=17')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .saveScreenshot(makePathFlat('M211-1', 'manual'))
+
+                    .url(config.context + '/PE/ProcessModel/listView').pause(3000).then()
+                    .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=17&nodeNumber=']").pause(5000).then()
+                    .scroll("input[name='data[10].input']", 0, -200)
+                    .saveScreenshot(makePathFlat('M211-2', 'manual'))
+
+                    .setValue("input[name='title']", '鈴木 クエ太')
+                    .click("input[id='saveOnlyButton']").pause(2000).then()
+                    .alertAccept()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=17')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M211-3 : 処理担当者タブを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M211-3', 'manual/base'))
+
+
+                    .call(done);
+            });
+        });
+
+        describe('M212-1 M212-2 M212-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=18')
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .saveScreenshot(makePathFlat('M212-1', 'manual'))
+
+                    .url(config.context + '/PE/Workitem/list').pause(3000).then()
+                    .execute(function() {
+                        var $ = jQuery;
+                        $("input[name='query']").val('株式会社 クエステトラ')
+                        return;
+                    }).then()
+                    .submitForm('#pi-search-form').pause(5000).then()
+                    .click("a[href^='/OR/ProcessInstance/view?processInstanceId=']").pause(5000).then()
+                    .click("a[href^='/PE/Workitem/Form/viewIframe?workitemId']").pause(5000).then()
+                    .scroll("div[id='readonly_1']", 0, -200)
+                    .saveScreenshot(makePathFlat('M212-2', 'manual'))
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=19')
+                    .alertAccept()
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .saveScreenshot(makePathFlat('M212-3', 'manual'))
+                    /*
+                                        .setValue("input[name='title']", '鈴木 クエ太')
+                                        .click("input[id='saveOnlyButton']").pause(2000).then()
+                                        .alertAccept()
+
+                                        .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=17')
+                                        .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                                        .execute(cGunAdd, 'M212-3 : 処理担当者タブを開く')
+                                        .waitUntil(function() {
+                                            return cGunWait(client);
+                                        }, 500000).then().execute(cGunRemove)
+                                        .saveScreenshot(makePathFlat('M212-3', 'manual/base'))
+                    */
+
                     .call(done);
             });
         });
@@ -534,16 +883,39 @@ module.exports = function() {
                 this.timeout(30000);
                 client
                     .url(config.context + '/j_spring_security_logout').pause(2000).then()
-                    .url(config.context + "/Login_show").then()
-                    .setValue('input[name=j_username]', config.qusers.admin.mail)
-                    .setValue('input[name=j_password]', config.qusers.admin.password)
+                    .url(config.context + "/Login_show").then().pause(3000).then()
+                    .setValue('input[name=j_username]', config.qusers.admin.mail).pause(500).then()
+                    .setValue('input[name=j_password]', config.qusers.admin.password).pause(1000).then()
                     .click('input[class=login-submit]')
                     .pause(2000).then()
-                    // 無効か
+                    // 無効化
+
+                    //　作業依頼
                     .url(config.context + '/PMM/ProcessModel/stop?processModelInfoId=4').then()
                     .click("input[id='stopProcessInstance-true']").then()
                     .click("form[id='stopForm'] input[type='submit']").then()
                     .url(config.context + '/PMM/ProcessModel/restart?processModelInfoId=4').then()
+                    .then(function(){
+                        console.log("\t　作業依頼");
+                    })
+
+                    //
+                    .url(config.context + '/PMM/ProcessModel/stop?processModelInfoId=17').then()
+                    .click("input[id='stopProcessInstance-true']").then()
+                    .click("form[id='stopForm'] input[type='submit']").then()
+                    .url(config.context + '/PMM/ProcessModel/restart?processModelInfoId=17').then()
+                    .then(function(){
+                        console.log("\t　採用選考");
+                    })
+
+                    .url(config.context + '/PMM/ProcessModel/stop?processModelInfoId=18').then()
+                    .click("input[id='stopProcessInstance-true']").then()
+                    .click("form[id='stopForm'] input[type='submit']").then()
+                    .url(config.context + '/PMM/ProcessModel/restart?processModelInfoId=18').then()
+                    .then(function(){
+                        console.log("\t　第三者割当");
+                    })
+
                     .url(config.context + '/j_spring_security_logout').pause(2000)
                     .call(done);
             });

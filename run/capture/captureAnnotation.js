@@ -46,7 +46,7 @@ const Annotation = {
         let marginLeft = 40;
         let marginRight = 40;
         let marginTop = 0;
-        let marginBottom = 0;
+        let marginBottom = 10;
         let paddingLeft = 5;
         let paddingRight = 5;
         let paddingTop = 5;
@@ -71,6 +71,66 @@ const Annotation = {
             .css("position", "relative");
 
         switch(position){
+            case "top-left":
+                $titleFront
+                    .css("top", (scroll + marginTop + paddingTop + borderingWidth) + "px")
+                    .css("left", (scroll + marginRight + paddingRight + borderingWidth) + "px")
+                    .css("text-align" , "left");
+                $("body")
+                    .append($titleFront);
+
+                for(var deg = 0; deg < 360; deg+=12){
+                    var s = Math.sin(deg * (Math.PI / 180));
+                    var c = Math.cos(deg * (Math.PI / 180));
+
+                    var $titleBack = $("<div />");
+                    $titleBack
+                        .addClass("annotation-item")
+                        .html(text)
+                        .css("position", "absolute")
+                        .css("font-size", fontSize + "px")
+                        .css("font-weight", "bold")
+                        .css("line-height", "1.1em")
+                        .css("color", borderingColor)
+                        .css("z-index", 9999)
+                        .css("top", (scroll + marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
+                        .css("left", (scroll + marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
+                        .css("text-align" , "left");
+                    $("body")
+                        .append($titleBack);
+                }
+                break;
+
+            case "bottom-right":
+                $titleFront
+                    .css("bottom", (scroll + marginTop + paddingTop + borderingWidth) + "px")
+                    .css("right", (scroll + marginRight + paddingRight + borderingWidth) + "px")
+                    .css("text-align" , "right");
+                $("body")
+                    .append($titleFront);
+
+                for(var deg = 0; deg < 360; deg+=12){
+                    var s = Math.sin(deg * (Math.PI / 180));
+                    var c = Math.cos(deg * (Math.PI / 180));
+
+                    var $titleBack = $("<div />");
+                    $titleBack
+                        .addClass("annotation-item")
+                        .html(text)
+                        .css("position", "absolute")
+                        .css("font-size", fontSize + "px")
+                        .css("font-weight", "bold")
+                        .css("line-height", "1.1em")
+                        .css("color", borderingColor)
+                        .css("z-index", 9999)
+                        .css("bottom", (scroll + marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
+                        .css("right", (scroll + marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
+                        .css("text-align" , "right");
+                    $("body")
+                        .append($titleBack);
+                }
+                break;
+
             case "bottom-left":
                 $titleFront
                     .css("bottom", (scroll + marginTop + paddingTop + borderingWidth) + "px")
@@ -78,6 +138,7 @@ const Annotation = {
                     .css("text-align" , "left");
                 $("body")
                     .append($titleFront);
+
                 for(var deg = 0; deg < 360; deg+=12){
                     var s = Math.sin(deg * (Math.PI / 180));
                     var c = Math.cos(deg * (Math.PI / 180));
@@ -128,6 +189,7 @@ const Annotation = {
                 }
                 break;
         }
+
 
         return logs;
     },
