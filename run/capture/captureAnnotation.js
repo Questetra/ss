@@ -38,7 +38,8 @@ const Annotation = {
         let logs = [];
         logs.push("title");
 
-        let scroll = $("body").scrollTop();
+        let scroll = $(window).scrollTop();
+        logs.push("scroll:" + scroll);
 
         let fontColor = "#fff9c4";
         let borderingColor = "#000a12";
@@ -74,7 +75,7 @@ const Annotation = {
             case "top-left":
                 $titleFront
                     .css("top", (scroll + marginTop + paddingTop + borderingWidth) + "px")
-                    .css("left", (scroll + marginRight + paddingRight + borderingWidth) + "px")
+                    .css("left", (marginRight + paddingRight + borderingWidth) + "px")
                     .css("text-align" , "left");
                 $("body")
                     .append($titleFront);
@@ -94,7 +95,7 @@ const Annotation = {
                         .css("color", borderingColor)
                         .css("z-index", 9999)
                         .css("top", (scroll + marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
-                        .css("left", (scroll + marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
+                        .css("left", (marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
                         .css("text-align" , "left");
                     $("body")
                         .append($titleBack);
@@ -104,7 +105,7 @@ const Annotation = {
             case "bottom-right":
                 $titleFront
                     .css("bottom", (scroll + marginTop + paddingTop + borderingWidth) + "px")
-                    .css("right", (scroll + marginRight + paddingRight + borderingWidth) + "px")
+                    .css("right", (marginRight + paddingRight + borderingWidth) + "px")
                     .css("text-align" , "right");
                 $("body")
                     .append($titleFront);
@@ -124,7 +125,7 @@ const Annotation = {
                         .css("color", borderingColor)
                         .css("z-index", 9999)
                         .css("bottom", (scroll + marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
-                        .css("right", (scroll + marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
+                        .css("right", (marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
                         .css("text-align" , "right");
                     $("body")
                         .append($titleBack);
@@ -134,7 +135,7 @@ const Annotation = {
             case "bottom-left":
                 $titleFront
                     .css("bottom", (scroll + marginTop + paddingTop + borderingWidth) + "px")
-                    .css("left", (scroll + marginRight + paddingRight + borderingWidth) + "px")
+                    .css("left", (marginRight + paddingRight + borderingWidth) + "px")
                     .css("text-align" , "left");
                 $("body")
                     .append($titleFront);
@@ -154,7 +155,7 @@ const Annotation = {
                         .css("color", borderingColor)
                         .css("z-index", 9999)
                         .css("bottom", (scroll + marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
-                        .css("left", (scroll + marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
+                        .css("left", (marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
                         .css("text-align" , "left");
                     $("body")
                         .append($titleBack);
@@ -163,7 +164,7 @@ const Annotation = {
             default:
                 $titleFront
                     .css("top", (scroll + marginTop + paddingTop + borderingWidth) + "px")
-                    .css("right", (scroll + marginRight + paddingRight + borderingWidth) + "px")
+                    .css("right", (marginRight + paddingRight + borderingWidth) + "px")
                     .css("text-align" , "right");
                 $("body")
                     .append($titleFront);
@@ -182,7 +183,7 @@ const Annotation = {
                         .css("color", borderingColor)
                         .css("z-index", 9999)
                         .css("top", (scroll + marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
-                        .css("right", (scroll + marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
+                        .css("right", (marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
                         .css("text-align" , "right");
                     $("body")
                         .append($titleBack);
