@@ -920,8 +920,88 @@ module.exports = function() {
 
                     .call(done);
             });
-        }); 
+        });
 
+        describe('M215-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PE/Workitem/list').then().pause(2000)
+                    .then(function(){
+                        console.log("\t　既存の立替金申請タスクののキャプチャーを撮る");
+                    })
+                    .execute(function() {
+                        var $ = jQuery;
+                        $("input[name='query']").val('立替金')
+                        return;
+                    }).then()
+                    .submitForm('#pi-search-form').pause(3000).then()
+                    .click("a[href^='/OR/ProcessInstance/view?processInstanceId=']").pause(3000).then()
+                    .click("a[href^='/PE/Workitem/Form/viewIframe?workitemId=']").pause(3000).then()
+                    .scroll("h4[id='ss']")
+                    .saveScreenshot(makePathFlat('M215-1', 'manual'))
+
+                    .url(config.context + '/PE/Workitem/list').then().pause(2000)
+                    .alertAccept()
+
+                    .call(done);
+
+            });
+        });
+
+        describe('M216-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PE/Workitem/list').then().pause(2000)
+                    .then(function(){
+                        console.log("\t　既存の問い合わせタスクののキャプチャーを撮る");
+                    })
+                    .execute(function() {
+                        var $ = jQuery;
+                        $("input[name='query']").val('テスト問い合わせ')
+                        return;
+                    }).then()
+                    .submitForm('#pi-search-form').pause(3000).then()
+                    .click("a[href^='/OR/ProcessInstance/view?processInstanceId=']").pause(3000).then()
+                    .click("a[href^='/PE/Workitem/Form/viewIframe?workitemId=']").pause(3000).then()
+                    .scroll("div[class='paper_outer']", 0, -20)
+                    .saveScreenshot(makePathFlat('M216-1', 'manual'))
+
+                    // 216-2
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').then().pause(2000)
+                    .alertAccept()
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M216-2 : データ項目タブ > 「高度なレイアウトを編集」', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M216-2', 'manual'))
+
+                    // 216-3
+                    .url(config.context + '/PE/Workitem/list').then().pause(2000)
+                    .then(function(){
+                        console.log("\t　既存の書籍タスクののキャプチャーを撮る");
+                    })
+                    .execute(function() {
+                        var $ = jQuery;
+                        $("input[name='query']").val('書籍購入')
+                        return;
+                    }).then()
+                    .submitForm('#pi-search-form').pause(3000).then()
+                    .click("a[href^='/OR/ProcessInstance/view?processInstanceId=']").pause(3000).then()
+                    .click("a[href^='/PE/Workitem/Form/viewIframe?workitemId=']").pause(3000).then()
+                    .scroll("h2[class='isbn-view']", 0, -20)
+                    .saveScreenshot(makePathFlat('M216-3', 'manual'))
+                    .url(config.context + '/PE/Workitem/list').then().pause(2000)
+                    .alertAccept()
+
+                    
+
+                    .call(done);
+
+            });
+        }); 
 
         describe('プロセス消去', () => {
             it('is OK', function(done) {
@@ -998,6 +1078,7 @@ module.exports = function() {
                     .call(done);
             });
         });
+
 
     });
 };
