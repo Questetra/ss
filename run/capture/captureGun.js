@@ -18,11 +18,13 @@ module.exports = {
             fontColor = "white";
         }
 
+        let scroll = $(window).scrollTop();
+
         $trigger
             .addClass("capture-trigger-item")
             .addClass("capture-trigger-item-wrapper")
             .css("position", "absolute")
-            .css("top", "2px")
+            .css("top", (scroll + 2 ) + "px")
             .css("right", "2px")
             .css("backgroundColor", bgColor)
             .css("borderRadius", "2px")

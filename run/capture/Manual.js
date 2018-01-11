@@ -402,7 +402,7 @@ module.exports = function() {
             it('is OK', function(done) {
                 this.timeout(100000);
                 client
-                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=4')
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=4').pause(3000)
                     .execute(Annotation.rectangle, "div.system a[href^='/PMM/ProcessModel/Version/edit?']", {
                         text: "(モデリング画面へ)",
                         position: cAnoPosition.TOP_RIGHT
@@ -995,13 +995,149 @@ module.exports = function() {
                     .saveScreenshot(makePathFlat('M216-3', 'manual'))
                     .url(config.context + '/PE/Workitem/list').then().pause(2000)
                     .alertAccept()
-
-                    
+ 
 
                     .call(done);
 
             });
-        }); 
+        });
+
+// 20180111
+        describe('M217-1, M217-2 M217-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=25').pause(3000)
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M217-1 : アドバンスド > タイマー開始イベントのアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "指定日時に自動開始（起動）").then()
+                    .saveScreenshot(makePathFlat('M217-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    // Flash
+                    .execute(cGunAdd, 'M217-2 : タイマー開始イベントのプロパティを開く > やや上寄せ')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "タイマー開始イベントの<br />プロパティで日時を指定").then()
+                    .saveScreenshot(makePathFlat('M217-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    // Flash
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=26').pause(3000)
+                    .alertAccept()
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M217-3 : タイマー開始イベントのプロパティを開く　> 下の方に寄せる')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "毎日・毎週・毎月・毎年<br />時刻・日にち・曜日<br />を指定").then()
+                    .saveScreenshot(makePathFlat('M217-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    // alert
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=25').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
+        describe('M218-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=27').pause(3000)
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M218-1 : アドバンスド > メッセージ開始イベント（メール）のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "メール受信時に自動開始（起動）").then()
+                    .saveScreenshot(makePathFlat('M218-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=27').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
+        describe('M219-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=28').pause(3000)
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M219-1 : アドバンスド > メッセージ開始イベント（メール）のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "FAXの受信通知メールで自動開始").then()
+                    .saveScreenshot(makePathFlat('M219-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M219-2 : メッセージ開始イベント（メール）のプロパティを開く', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "メッセージ開始イベント<br />（メール）のプロパティで設定").then()
+                    .saveScreenshot(makePathFlat('M219-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=28').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
+        describe('M220-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    // M220-2-a
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').pause(3000)
+                    .click("a[href^='/PMM/ProcessModel/view?processModelId=']").pause(5000).then()
+                    .scroll("a[href^='/PMM/ProcessModel/view?processModelId=']", 0, -40)
+                    .saveScreenshot(makePathFlat('M220-2-a', 'manual/base'))
+                    // M220-2-b
+                    .url(config.context + '/PMM/ProcessModel/MessageReceiveEventForm/view?processModelInfoId=23&nodeNumber=3').pause(3000)
+                    .setViewportSize({
+                        width: 991,
+                        height: 533
+                    })
+                    .saveScreenshot(makePathFlat('M220-1-b', 'manual/base'))
+                    .then(function(){
+                        console.log("\t　M220-2-b");
+                    })
+                    .setViewportSize({
+                        width: 1200,
+                        height: 630
+                    })
+
+                    // M220-1
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').pause(3000)
+                    .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
+                    .execute(cGunAdd, 'M220-1 : アドバンスド > メッセージ開始イベント（フォーム）のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "Webフォームの入力で自動開始").then()
+                    .saveScreenshot(makePathFlat('M220-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
 
         describe('プロセス消去', () => {
             it('is OK', function(done) {
