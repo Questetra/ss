@@ -1096,7 +1096,7 @@ module.exports = function() {
             });
         });
 
-        describe('M220-1', () => {
+        describe('M220-1, M220-2', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
                 client
@@ -1138,6 +1138,144 @@ module.exports = function() {
             });
         });
 
+        describe('M221-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=29').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M220-1 : メッセージ開始イベント（HTTP）を選択 > アドバンスド > メッセージ開始イベント（HTTP）のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "HTTPリクエストで自動開始").then()
+                    .saveScreenshot(makePathFlat('M221-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=29').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
+        //*****************************
+        // M222
+
+
+        describe('M222-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .then(function(){
+                        console.log("\t　M222-1　: 作りにくいのでスキップ");
+                    })
+                    .call(done);
+            });
+        });
+
+
+        describe('M223-1, M223-2, M223-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=30').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M223-1 : アドバンスド > タイマー中間イベント のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "タイマー中間イベントを配置").then()
+                    .saveScreenshot(makePathFlat('M223-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M223-2 : XORゲートウェイのプロパティを開く > 「あり」の条件式設定 を開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M223-2', 'manual/base'))
+
+                    .execute(cGunAdd, 'M223-3 : タイマー中間イベントのプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M223-3', 'manual/base'))
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=30').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
+
+         describe('M224-1, M224-2, M224-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=31').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M224-1 : アドバンスド > メッセージ送信中間イベント（メール） のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "業務データをメール文に挿入").then()
+                    .saveScreenshot(makePathFlat('M224-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M224-2 : メッセージ送信中間イベント（メール） プロパティを開き > 「データ埋め込み」をプルダウン表示', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M224-2', 'manual/base'))
+
+                    .then(function(){
+                        console.log("\t　M224-3　: 作りにくいのでスキップ");
+                    })
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=31').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });
+
+        describe('M225-1, M225-2, M225-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=32').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M225-1 : アドバンスド > メッセージ送信中間イベント（HTTP） のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "業務データをHTTP通信で送信").then()
+                    .saveScreenshot(makePathFlat('M225-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M225-2 : メッセージ送信中間イベント（HTTP）プロパティを開き > 「通信設定」タブを表示')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "HTTPリクエスト送信先や<br />通信方法を設定").then()
+                    .saveScreenshot(makePathFlat('M225-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M225-3 : つづいて、「送信パラメータ」タブを表示　> paramBでプルダウンを表示', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "通信パラメータ名を設定").then()
+                    .saveScreenshot(makePathFlat('M225-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=32').pause(3000)
+                    .alertAccept()
+
+                    .call(done);
+            });
+        });   
 
         describe('プロセス消去', () => {
             it('is OK', function(done) {
