@@ -231,6 +231,7 @@ module.exports = function() {
             });
         });
 
+/*
         describe('Login > Google連携/SAML連携　有効化 > Logout > M101-3 > Login > Google連携/SAML連携　無効化 > Logout > M101-2', () => {
             it('is OK', function(done) {
                 this.timeout(120000);
@@ -304,6 +305,7 @@ module.exports = function() {
                     .call(done);
             });
         });
+*/
 
         describe('Login', () => {
             it('is OK', function(done) {
@@ -424,7 +426,7 @@ module.exports = function() {
             });
         });
 
-        describe('M202-1, M202-2 M202-3', () => {
+        describe('M202-1, M202-2, M202-3', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
                 client
@@ -454,7 +456,7 @@ module.exports = function() {
                         console.log("\tM202-2");
                     })
 
-                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=3')
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=11')
                     .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
 
                     .execute(cGunAdd, 'M202-3 : タイマー境界のプロパティを開き、締め切り/通知タブを選択')
@@ -795,7 +797,7 @@ module.exports = function() {
             });
         });
 
-        describe('M213-1 M213-2 M213-3', () => {
+        describe('M213-1', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
                 client
@@ -822,6 +824,13 @@ module.exports = function() {
                     .execute(Annotation.clear).then()
                     .click("input[id='saveOnlyButton']").pause(2000).then()
                     .alertAccept()
+                    .call(done);
+            });
+        });
+        describe('M213-2', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
 
                     // M213-2
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=20')
@@ -833,7 +842,14 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "「文字の強調」や「外部リング」").then()
                     .saveScreenshot(makePathFlat('M213-2', 'manual/base'))
                     .execute(Annotation.clear).then()
+                    .call(done);
+            });
+        });
 
+        describe('M213-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
                     // M213-3
                     .execute(cGunAdd, 'M213-3 : 続いて、「翻訳文」データ項目を選択')
                     .waitUntil(function() {
@@ -1104,6 +1120,10 @@ module.exports = function() {
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').pause(3000)
                     .click("a[href^='/PMM/ProcessModel/view?processModelId=']").pause(5000).then()
                     .scroll("a[href^='/PMM/ProcessModel/view?processModelId=']", 0, -40)
+                    .execute(cGunAdd, 'M220-2 : プロセス図 > メッセージ開始イベント（フォーム）のプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
                     .saveScreenshot(makePathFlat('M220-2-a', 'manual/base'))
                     // M220-2-b
                     .url(config.context + '/PMM/ProcessModel/MessageReceiveEventForm/view?processModelInfoId=23&nodeNumber=3').pause(3000)
@@ -1111,7 +1131,7 @@ module.exports = function() {
                         width: 991,
                         height: 533
                     })
-                    .saveScreenshot(makePathFlat('M220-1-b', 'manual/base'))
+                    .saveScreenshot(makePathFlat('M220-2-b', 'manual/base'))
                     .then(function(){
                         console.log("\t　M220-2-b");
                     })
@@ -1275,7 +1295,164 @@ module.exports = function() {
 
                     .call(done);
             });
-        });   
+        });
+
+        describe('M226-1, M226-2, M226-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    // M226-2-b, M226-1
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=33').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .saveScreenshot(makePathFlat('M226-2-b', 'manual/base'))
+                    .execute(cGunAdd, 'M226-1 : アドバンスド > メッセージ受信中間イベント（HTTP） のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "業務データ受信を<br />HTTPで待ち受け").then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "メッセージ受信中間イベント（HTTP）を配置", 50).then()
+                    .saveScreenshot(makePathFlat('M226-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    // M226-2-a
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=34').pause(5000)
+                    .alertAccept()
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "プロセス間で業務データを受け渡し", 50).then()
+                    .saveScreenshot(makePathFlat('M226-2-a', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    // M226-3-a
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=33').pause(3000)
+                    .click("a[href^='/PMM/ProcessModel/view?processModelId=']").pause(5000).then()
+                    .scroll("a[href^='/PMM/ProcessModel/view?processModelId=']", 0, -40)
+                    .execute(cGunAdd, 'M226-3-a : プロセス図 > メッセージ受信中間イベント（フォーム）のプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "待ち受け情報を確認").then()
+                    .saveScreenshot(makePathFlat('M226-3-a', 'manual/base'))
+                    .execute(Annotation.clear).then()
+                    // M226-3-b
+                    .url(config.context + '/PMM/ProcessModel/MessageReceiveEventHttp/view?processModelInfoId=33&nodeNumber=3').pause(3000)
+                    .setViewportSize({
+                        width: 991,
+                        height: 533
+                    })
+                    .saveScreenshot(makePathFlat('M226-3-b', 'manual/base'))
+                    .then(function(){
+                        console.log("\t　M226-3-b");
+                    })
+                    .setViewportSize({
+                        width: 1200,
+                        height: 630
+                    })
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=33').pause(5000)
+
+                    .call(done);
+            });
+        });
+
+        describe('M228-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=35').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M227-1 : アドバンスド > サービスタスク（データ設定）　のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "業務データ受信を<br />自動セット・加工").then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "サービスタスク（データ設定）を配置", 50).then()
+                    .saveScreenshot(makePathFlat('M227-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M228-1, M228-2, M228-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=37').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M228-1 : アドバンスド > サービスタスク（PDF生成）　のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "PDF帳票を自動生成").then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "サービス工程を配置", 50).then()
+                    .saveScreenshot(makePathFlat('M228-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M228-2 : サービスタスク（PDF生成）のプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M228-3', 'manual/base'))
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "台紙PDFのサンプルをダウンロード", 50).then()
+                    .saveScreenshot(makePathFlat('M228-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });
+
+        describe('M229-1, M229-2, M229-3', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=38').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M229-1 : アドバンスド > サービスタスク（Googleドライブ）　のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "サービスタスク（Googleドライブ）を配置", 50).then()
+                    .saveScreenshot(makePathFlat('M229-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M229-2 : サービスタスク（Googleドライブ）　のプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "Google Apps 連携が設定されている<br />環境で利用可能", 50).then()
+                    .saveScreenshot(makePathFlat('M229-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=39').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "自動化").then()
+                    .saveScreenshot(makePathFlat('M229-3', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+
+                    .call(done);
+            });
+        });
+
+        describe('M230-1', () => {
+            it('is OK', function(done) {
+                this.timeout(600000);
+                client
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=40').pause(5000)
+                    .click("a[href^='/PMM/ProcessModel/Version/edit?processModelId']").pause(5000).then()
+                    .execute(cGunAdd, 'M230-1 : アドバンスド > スクリプトタスク　のアイコンにマウスをオーバーする（重なり注意）', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "プログラムを実行できる工程").then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "スクリプトタスクを配置", 50).then()
+                    .saveScreenshot(makePathFlat('M230-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .call(done);
+            });
+        });     
+
 
         describe('プロセス消去', () => {
             it('is OK', function(done) {
@@ -1352,7 +1529,6 @@ module.exports = function() {
                     .call(done);
             });
         });
-
 
     });
 };

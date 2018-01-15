@@ -32,8 +32,11 @@ const Annotation = {
 	clear:function(){
         var $ = jQuery;
 		$(".annotation-item").remove();
+
+        $("body")
+            .css("overflow-y", "auto");
 	},
-    title:function(position, text){
+    title:function(position, text, size){
         var $ = jQuery;
         let logs = [];
         logs.push("title");
@@ -44,6 +47,9 @@ const Annotation = {
         let fontColor = "#fff9c4";
         let borderingColor = "#000a12";
         let fontSize = 75;
+        if(typeof size === "number"){
+            fontSize = size;
+        }
         let marginLeft = 40;
         let marginRight = 40;
         let marginTop = 0;
@@ -69,7 +75,8 @@ const Annotation = {
             .css("z-index", 99999);
 
         $("body")
-            .css("position", "relative");
+            .css("position", "relative")
+            .css("overflow-y", "hidden");
 
         switch(position){
             case "top-left":
