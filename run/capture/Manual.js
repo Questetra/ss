@@ -97,6 +97,16 @@ module.exports = function() {
                 this.timeout(30000);
                 client
                     .url(config.context + "/Login_show").then().pause(2000)
+
+                    .execute(cGunAdd, 'オレンジアラートをとじてはいけません')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .setViewportSize({
+                        width: 1200,
+                        height: 630
+                    })
+
                     .setValue('input[name=j_username]', config.qusers.admin.mail)
                     .setValue('input[name=j_password]', config.qusers.admin.password)
                     .click('input[class=login-submit]')
@@ -108,7 +118,8 @@ module.exports = function() {
             });
         });
 
-        describe('タスクの生成', () => {
+        // ***********************************************************************************************
+        describe('タスクの生成 Login', () => {
             it('is OK', function(done) {
                 this.timeout(120000);
                 client
@@ -116,7 +127,18 @@ module.exports = function() {
                     .setValue('input[name=j_username]', config.qusers.tasker.mail).pause(500)
                     .setValue('input[name=j_password]', config.qusers.tasker.password).pause(1000)
                     .click('input[class=login-submit]').pause(2000)
+                    .setViewportSize({
+                        width: 1200,
+                        height: 630
+                    })
+                .call(done);
+            });
+        });
 
+        describe('タスクの生成 期限の切れたタスク', () => {
+            it('is OK', function(done) {
+                this.timeout(120000);
+                client
                     // 期限の切れたタスクを依頼する
                     .url(config.context + '/PE/ProcessModel/listView').then().pause(2000)
                     .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=4']").pause(2000)
@@ -148,7 +170,14 @@ module.exports = function() {
                     .then(function(){
                         console.log("\t　作業依頼フロー　期限の切れたタスク");
                     })
+                .call(done);
+            });
+        });
 
+        describe('タスクの生成 期限内のタスク', () => {
+            it('is OK', function(done) {
+                this.timeout(120000);
+                client
                     // 期限内のタスクを生成
                     .url(config.context + '/PE/ProcessModel/listView').then().pause(2000)
                     .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=4']").pause(2000)
@@ -187,7 +216,14 @@ module.exports = function() {
                     .then(function(){
                         console.log("\t　作業依頼フロー　期限内のタスク");
                     })
+                .call(done);
+            });
+        });
 
+        describe('タスクの生成 投資判断フロー', () => {
+            it('is OK', function(done) {
+                this.timeout(120000);
+                client
                     // 投資判断フロー
                     .url(config.context + '/PE/ProcessModel/listView').then().pause(2000)
                     .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=18']").pause(2000)
@@ -207,7 +243,14 @@ module.exports = function() {
                     .then(function(){
                         console.log("\t　投資判断フロー");
                     })
+                .call(done);
+            });
+        });
 
+        describe('タスクの生成 翻訳', () => {
+            it('is OK', function(done) {
+                this.timeout(120000);
+                client
                     // 翻訳
                     .url(config.context + '/PE/ProcessModel/listView').pause(5000)
                     .click("a[href^='/PE/ProcessInstance/startAndExecute?processModelInfoId=20']").pause(5000).then()
@@ -230,8 +273,8 @@ module.exports = function() {
                     .call(done);
             });
         });
+        // ***********************************************************************************************
 
-/*
         describe('Login > Google連携/SAML連携　有効化 > Logout > M101-3 > Login > Google連携/SAML連携　無効化 > Logout > M101-2', () => {
             it('is OK', function(done) {
                 this.timeout(120000);
@@ -305,7 +348,6 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
 
         describe('Login', () => {
             it('is OK', function(done) {
@@ -315,6 +357,10 @@ module.exports = function() {
                     .setValue('input[name=j_username]', config.qusers.admin.mail).pause(500)
                     .setValue('input[name=j_password]', config.qusers.admin.password).pause(500)
                     .click('input[class=login-submit]').pause(2000).then()
+                    .setViewportSize({
+                        width: 1200,
+                        height: 630
+                    })
                     .call(done);
             });
         });
@@ -419,6 +465,10 @@ module.exports = function() {
 
                     .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
                     .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "モデリング画面").then()
+                    .execute(cGunAdd, 'M201-3 : プロパティを開くなど、にぎやかす')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
                     .saveScreenshot(makePathFlat('M201-3', 'manual'))
                     .execute(Annotation.clear).then()
 
@@ -433,7 +483,7 @@ module.exports = function() {
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=4')
                     .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
 
-                    .execute(cGunAdd, 'M202-1 : プロパティを開き、締め切り/通知タブを選択')
+                    .execute(cGunAdd, 'M202-1 : プロパティを開き、締め切り/通知メールタブを選択')
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
@@ -506,7 +556,7 @@ module.exports = function() {
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=7')
                     .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
 
-                    .execute(cGunAdd, 'M203-3 : ゲートウェイのプロパティを開く', 5)
+                    .execute(cGunAdd, 'M203-3 : ゲートウェイのプロパティを開く')
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
@@ -988,7 +1038,7 @@ module.exports = function() {
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').then().pause(2000)
                     .alertAccept()
                     .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
-                    .execute(cGunAdd, 'M216-2 : データ項目タブ > 「高度なレイアウトを編集」', 5)
+                    .execute(cGunAdd, 'M216-2 : データ項目タブ > 「高度なレイアウトを編集」')
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
@@ -1097,7 +1147,7 @@ module.exports = function() {
                     .saveScreenshot(makePathFlat('M219-1', 'manual/base'))
                     .execute(Annotation.clear).then()
 
-                    .execute(cGunAdd, 'M219-2 : メッセージ開始イベント（メール）のプロパティを開く', 5)
+                    .execute(cGunAdd, 'M219-2 : メッセージ開始イベント（メール）のプロパティを開く')
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
@@ -1139,6 +1189,7 @@ module.exports = function() {
                         width: 1200,
                         height: 630
                     })
+
 
                     // M220-1
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=23').pause(3000)
@@ -1456,7 +1507,7 @@ module.exports = function() {
 
         describe('プロセス消去', () => {
             it('is OK', function(done) {
-                this.timeout(60000);
+                this.timeout(120000);
                 client
                     .url(config.context + '/j_spring_security_logout').pause(2000).then()
                     .url(config.context + "/Login_show").then().pause(3000).then()

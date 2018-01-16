@@ -4,7 +4,7 @@ module.exports = {
 
         var $btn = $('<button />')
             .attr('type', 'button')
-            .html('Capture')
+            .html('Ready')
             .attr('id', 'capture-trigger-btn');
 
         var $trigger = $('<div />');
