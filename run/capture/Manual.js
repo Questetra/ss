@@ -364,7 +364,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-
+/*
         describe('M101-1', () => {
             it('is OK', function(done) {
                 this.timeout(20000);
@@ -556,7 +556,7 @@ module.exports = function() {
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=7')
                     .click("div.system a[href^='/PMM/ProcessModel/Version/edit?']").pause(5000).then()
 
-                    .execute(cGunAdd, 'M203-3 : ゲートウェイのプロパティを開く')
+                    .execute(cGunAdd, 'M203-3 : ゲートウェイのプロパティを開く',5)
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
@@ -564,6 +564,9 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "ORゲートウェイ").then()
                     .saveScreenshot(makePathFlat('M203-3', 'manual/base'))
                     .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=5')
+                    .alertAccept()
 
                     .call(done);
             });
@@ -591,6 +594,9 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "合流後ループのパターン").then()
                     .saveScreenshot(makePathFlat('M204-3', 'manual/base'))
                     .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=8')
+                    .alertAccept()
 
                     .call(done);
             });
@@ -629,6 +635,9 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.TOP_LEFT, "一括して閲覧レベル設定").then()
                     .saveScreenshot(makePathFlat('M205-3', 'manual/base'))
                     .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=11')
+                    .alertAccept()
 
                     .call(done);
             });
@@ -753,9 +762,24 @@ module.exports = function() {
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
-
                     .execute(Annotation.title, cAnoPosition.TOP_LEFT, "スイムレーン単位で担当者設定").then()
-                    .saveScreenshot(makePathFlat('M209-1', 'manual/base'))
+                    .saveScreenshot(makePathFlat('M209-1', 'manual'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M209-2 : 処理担当者タブ > ネットワーク管理者レーン > 編集 > 「組織」を選択 > 「より下位組織に所属するメンバ」のプルダウン表示',5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "[引受候補者]を一括して追加").then()
+                    .saveScreenshot(makePathFlat('M209-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M209-3 : 処理担当者タブ > 使用者レーン >　編集')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "管掌役員の指定例").then()
+                    .saveScreenshot(makePathFlat('M209-3', 'manual/base'))
                     .execute(Annotation.clear).then()
 
                     .call(done);
@@ -905,7 +929,7 @@ module.exports = function() {
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
-                    .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "JavaScriptで更なる工夫も").then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "JavaScriptで更なる工夫も").then()
                     .saveScreenshot(makePathFlat('M213-3', 'manual/base'))
                     .execute(Annotation.clear).then()
 
@@ -1111,7 +1135,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-
+*/
         describe('M218-1', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1124,6 +1148,14 @@ module.exports = function() {
                     }, 500000).then().execute(cGunRemove)
                     .execute(Annotation.title, cAnoPosition.TOP_LEFT, "メール受信時に自動開始（起動）").then()
                     .saveScreenshot(makePathFlat('M218-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M218-2 : メッセージ開始イベント（メール）のプロパティを開く', 5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "メッセージ開始イベント（メール）の<br />プロパティで設定", 50).then()
+                    .saveScreenshot(makePathFlat('M218-2', 'manual/base'))
                     .execute(Annotation.clear).then()
 
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=27').pause(3000)
@@ -1420,6 +1452,9 @@ module.exports = function() {
                     .saveScreenshot(makePathFlat('M227-1', 'manual/base'))
                     .execute(Annotation.clear).then()
 
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=35').pause(5000)
+                    .alertAccept()
+
                     .call(done);
             });
         });
@@ -1447,6 +1482,9 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "台紙PDFのサンプルをダウンロード", 50).then()
                     .saveScreenshot(makePathFlat('M228-2', 'manual/base'))
                     .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=37').pause(5000)
+                    .alertAccept()
 
                     .call(done);
             });
@@ -1479,6 +1517,9 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.TOP_LEFT, "自動化").then()
                     .saveScreenshot(makePathFlat('M229-3', 'manual/base'))
                     .execute(Annotation.clear).then()
+
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=39').pause(5000)
+                    .alertAccept()
 
 
                     .call(done);
