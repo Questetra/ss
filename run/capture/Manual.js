@@ -76,7 +76,7 @@ module.exports = function() {
             this.timeout(10000);
             client.end().call(done);
         });
-/*
+
         describe('GET Version', () => {
             it('is OK', function(done) {
                 client
@@ -91,7 +91,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
+
         describe('Login > Flash有効化 > Logout', () => {
             it('is OK', function(done) {
                 this.timeout(30000);
@@ -118,7 +118,6 @@ module.exports = function() {
             });
         });
 
-/*
         // ***********************************************************************************************
         describe('タスクの生成 Login', () => {
             it('is OK', function(done) {
@@ -349,7 +348,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
+
         describe('Login', () => {
             it('is OK', function(done) {
                 this.timeout(10000);
@@ -365,7 +364,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-/*
+
         describe('M101-1', () => {
             it('is OK', function(done) {
                 this.timeout(20000);
@@ -1565,7 +1564,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
+
         describe('M230-1', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1592,7 +1591,6 @@ module.exports = function() {
             });
         });     
 
-/*
         describe('プロセス消去', () => {
             it('is OK', function(done) {
                 this.timeout(120000);
@@ -1668,6 +1666,5 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
     });
 };
