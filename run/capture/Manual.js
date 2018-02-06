@@ -118,6 +118,7 @@ module.exports = function() {
             });
         });
 
+/*
         // ***********************************************************************************************
         describe('タスクの生成 Login', () => {
             it('is OK', function(done) {
@@ -348,7 +349,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-
+*/
         describe('Login', () => {
             it('is OK', function(done) {
                 this.timeout(10000);
@@ -1135,7 +1136,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
+
         describe('M218-1', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1251,6 +1252,7 @@ module.exports = function() {
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M222-2', 'manual/base'))
                     .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "HTTPリクエストで自動開始").then()
                     .saveScreenshot(makePathFlat('M221-1', 'manual/base'))
                     .execute(Annotation.clear).then()
@@ -1292,13 +1294,13 @@ module.exports = function() {
                     .saveScreenshot(makePathFlat('M223-1', 'manual/base'))
                     .execute(Annotation.clear).then()
 
-                    .execute(cGunAdd, 'M223-2 : XORゲートウェイのプロパティを開く > 「あり」の条件式設定 を開く')
+                    .execute(cGunAdd, 'M223-3 : XORゲートウェイのプロパティを開く > 「あり」の条件式設定 を開く')
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
                     .saveScreenshot(makePathFlat('M223-2', 'manual/base'))
 
-                    .execute(cGunAdd, 'M223-3 : タイマー中間イベントのプロパティを開く')
+                    .execute(cGunAdd, 'M223-2 : タイマー中間イベントのプロパティを開く')
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
@@ -1437,7 +1439,7 @@ module.exports = function() {
             });
         });
 
-        describe('M228-1', () => {
+        describe('M227-1, M227-2', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
                 client
@@ -1450,6 +1452,14 @@ module.exports = function() {
                     .execute(Annotation.title, cAnoPosition.TOP_LEFT, "業務データ受信を<br />自動セット・加工").then()
                     .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "サービスタスク（データ設定）を配置", 50).then()
                     .saveScreenshot(makePathFlat('M227-1', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
+                    .execute(cGunAdd, 'M227-2 : サービスタスク（データ設定）　のプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "指定日の「翌日12時」をセット").then()
+                    .saveScreenshot(makePathFlat('M227-2', 'manual/base'))
                     .execute(Annotation.clear).then()
 
                     .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=35').pause(5000)
@@ -1483,13 +1493,42 @@ module.exports = function() {
                     .saveScreenshot(makePathFlat('M228-2', 'manual/base'))
                     .execute(Annotation.clear).then()
 
-                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=37').pause(5000)
-                    .alertAccept()
+                    // M228-3
+                    .url(config.context + '/PMM/ProcessModel/view?processModelInfoId=20').pause(5000)
+                    //.alertAccept()
+
+                    .execute(cGunAdd, 'M228-4 : 「▼アプリ」をクリックし「アドオンの管理」にマウスオーバー',5)
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .execute(Annotation.rectangle, "a[href^='/PMM/ProcessModel/File/list?processModelInfoId=']", {
+                        text: "この業務フローでしか使わない参照ファイルなら",
+                        position: cAnoPosition.BOTTOM
+                    }).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "業務プロセスに登録").then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "台紙PDF、選択肢XML、アドオン...", 50).then()
+                    .saveScreenshot(makePathFlat('M228-3', 'manual'))
+                    .execute(Annotation.clear).then()
+                    
+                    // M228-4
+                    .url(config.context + '/Admin/SystemFile/list').pause(5000)
+                    //.alertAccept()
+                    .scroll("a[href='/Admin/SystemFile/list']", 0, -100)
+                    .execute(Annotation.rectangle, "a[href='/Admin/SystemFile/list']", {
+                        text: "さまざまなアプリから利用される参照ファイルなら",
+                        position: cAnoPosition.BOTTOM_RIGHT
+                    }).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "ワークフロー基盤に登録").then()
+                    .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "台紙PDF、選択肢XML、アドオン...", 50).then()
+                    .saveScreenshot(makePathFlat('M228-5', 'manual'))
+                    .execute(Annotation.clear).then()
+
+
 
                     .call(done);
             });
         });
-
+*/
         describe('M229-1, M229-2, M229-3', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1500,7 +1539,8 @@ module.exports = function() {
                     .waitUntil(function() {
                         return cGunWait(client);
                     }, 500000).then().execute(cGunRemove)
-                    .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "サービスタスク（Googleドライブ）を配置", 50).then()
+                    .execute(Annotation.title, cAnoPosition.TOP_LEFT, "ファイルをGoogleドライブに保存", 50).then()
+                    .execute(Annotation.title, cAnoPosition.BOTTOM_RIGHT, "サービスタスク（Googleドライブ）を配置", 50).then()
                     .saveScreenshot(makePathFlat('M229-1', 'manual/base'))
                     .execute(Annotation.clear).then()
 
@@ -1525,7 +1565,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-
+/*
         describe('M230-1', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1621,6 +1661,6 @@ module.exports = function() {
                     .call(done);
             });
         });
-
+*/
     });
 };

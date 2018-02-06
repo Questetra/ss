@@ -141,7 +141,7 @@ const Annotation = {
 
             case "bottom-left":
                 $titleFront
-                    .css("bottom", (marginTop + paddingTop + borderingWidth) + "px")
+                    .css("bottom", (marginBottom + paddingBottom + borderingWidth) - scroll + "px")
                     .css("left", (marginRight + paddingRight + borderingWidth) + "px")
                     .css("text-align" , "left");
                 $("body")
@@ -161,7 +161,7 @@ const Annotation = {
                         .css("line-height", "1.1em")
                         .css("color", borderingColor)
                         .css("z-index", 9999)
-                        .css("bottom", (marginTop + paddingTop + borderingWidth + (borderingWidth * s)) + "px")
+                        .css("bottom", (marginBottom + paddingBottom + borderingWidth + (borderingWidth * s)) - scroll + "px")
                         .css("left", (marginRight + paddingRight + borderingWidth + (borderingWidth * c)) + "px")
                         .css("text-align" , "left");
                     $("body")
