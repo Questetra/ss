@@ -1528,7 +1528,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-*/
+
         describe('M229-1, M229-2, M229-3', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1565,7 +1565,7 @@ module.exports = function() {
                     .call(done);
             });
         });
-/*
+*/
         describe('M230-1', () => {
             it('is OK', function(done) {
                 this.timeout(600000);
@@ -1581,11 +1581,18 @@ module.exports = function() {
                     .saveScreenshot(makePathFlat('M230-1', 'manual/base'))
                     .execute(Annotation.clear).then()
 
+                    .execute(cGunAdd, 'M230-2 : スクリプトタスク　のプロパティを開く')
+                    .waitUntil(function() {
+                        return cGunWait(client);
+                    }, 500000).then().execute(cGunRemove)
+                    .saveScreenshot(makePathFlat('M230-2', 'manual/base'))
+                    .execute(Annotation.clear).then()
+
                     .call(done);
             });
         });     
 
-
+/*
         describe('プロセス消去', () => {
             it('is OK', function(done) {
                 this.timeout(120000);
