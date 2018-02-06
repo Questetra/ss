@@ -1519,7 +1519,7 @@ module.exports = function() {
                     }).then()
                     .execute(Annotation.title, cAnoPosition.BOTTOM_LEFT, "ワークフロー基盤に登録").then()
                     .execute(Annotation.title, cAnoPosition.TOP_RIGHT, "台紙PDF、選択肢XML、アドオン...", 50).then()
-                    .saveScreenshot(makePathFlat('M228-5', 'manual'))
+                    .saveScreenshot(makePathFlat('M228-4', 'manual'))
                     .execute(Annotation.clear).then()
 
 
