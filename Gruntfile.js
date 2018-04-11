@@ -21,7 +21,7 @@ module.exports = function(grunt) {
             }
 
             items.push(item);
-            md += "\n- " + '[' + code + '](https://questetra.github.io/ss/manual/' + filename + ' "' + code + '")';
+            md += "\n- " + '[' + code + '](https://questetra.github.io/ss/manual/' + filename + ' "' + code + '") : '  + filename;
         })
         grunt.file.write('list.json', JSON.stringify(items, null, 2));
 
