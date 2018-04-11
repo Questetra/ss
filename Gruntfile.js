@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         grunt.file.recurse('manual', function(abspath, rootdir, subdir, filename) {
             grunt.log.writeln(abspath, rootdir, subdir, filename);
 
-            var m = filename.match(/((M[0-9][0-9][0-9])-([0-9].*?))\.png/);
+            var m = filename.match(/((M[0-9][0-9][0-9])-([0-9].*?))\.[png|gif|jpg]/);
             var code = m[1];
             var num = m[3];
 
