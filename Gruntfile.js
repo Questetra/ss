@@ -8,20 +8,23 @@ module.exports = function(grunt) {
             grunt.log.writeln(abspath, rootdir, subdir, filename);
 
             var m = filename.match(/((M[0-9][0-9][0-9])-([0-9].*?))\.[png|gif|jpg]/);
-            var code = m[1];
-            var num = m[3];
 
-            grunt.log.writeln(m);
+            if(m){
+                var code = m[1];
+                var num = m[3];
 
-            var item = {
-                id: filename.toLowerCase(),
-                code: code,
-                number: num,
-                url: 'https://questetra.github.io/ss/manual/' + filename
+                grunt.log.writeln(m);
+
+                var item = {
+                    id: filename.toLowerCase(),
+                    code: code,
+                    number: num,
+                    url: 'https://questetra.github.io/ss/manual/' + filename
+                }
+
+                items.push(item);
+                md += "\n- " + '[' + code + '](https://questetra.github.io/ss/manual/' + filename + ' "' + code + '") : '  + filename;
             }
-
-            items.push(item);
-            md += "\n- " + '[' + code + '](https://questetra.github.io/ss/manual/' + filename + ' "' + code + '") : '  + filename;
         })
         grunt.file.write('list.json', JSON.stringify(items, null, 2));
 
